@@ -5,7 +5,7 @@
 
 ---
 
-## 1. Origin & Rationale - TESTTT
+## 1. Origin & Rationale
 
 Commodity‑rich industries are under mounting pressure to produce auditable ESG data across complex, multi‑party supply chains. Existing ERP add‑ons and manual spreadsheets cannot keep pace with regulatory scrutiny or real‑time decision needs. **Freenium** was conceived as a *friction‑free gateway* that lands on corporate desktops in minutes, proves value locally, and scales into a full SaaS platform—turning compliance overhead into competitive insight.
 
