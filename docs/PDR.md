@@ -50,19 +50,61 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ## 3. Product Requirements
 
 ### Functional Requirements
-1.  **Installation:** User can install Freemium desktop or Docker image.
-2.  **Data Ingest:**
-    *   System supports CSV file ingest for inventory and ESG metadata.
-    *   System supports API ingest (details to be specified per connector).
-    *   Ingested data is normalized via modular connectors.
-3.  **Asset Reconciliation:** A rules engine reconciles assets.
-4.  **Assurance Ledger:** The system emits assurance ledger entries based on reconciliation.
-5.  **Reporting & Visualization:**
-    *   User can view a heat-map of assets/ESG data.
-    *   User can view a variance dashboard.
-    *   User can generate a one-click PDF report suitable for auditors.
-6.  **Modularity:** Connectors for data ingest are modular.
-7.  **(Optional Future) Edge-Sync:** System allows activation for multi-user SaaS and premium modules.
+
+1.  **Web-Based Solution:**  
+    *   The platform is delivered as a secure, responsive web application.
+
+2.  **Authentication & User Management:**  
+    *   Two-factor authentication (2FA) required for all logins.  
+    *   Support for 1–2 users per account.  
+    *   Admin Portal for user and product management.
+
+3.  **Product Management:**  
+    *   Admins can create and manage Products within the platform.
+    *   Within the Admin Portal, users can define which attributes are available for Products, specify which are required, and set which are mandatory for each Product.
+
+4.  **Trade Blotter:**  
+    *   Centralized view of all trades with advanced filtering capabilities.  
+    *   Ability to export filtered trade data to CSV.
+
+5.  **Delta Ladder:**  
+    *   Interactive ladder view with sorting by attribute.  
+    *   Drill-down capability from monthly to daily timeframes.
+
+6.  **Trade Booking & Issuance:**  
+    *   Users can book trades and create issuances.  
+    *   Flexible booking architecture supporting daily, monthly, and strip forwards, futures contracts, and physical trades.
+    *   
+        **Trade Amendment:**  
+        *   Users have the ability to amend existing trades, including updating trade details, correcting errors, or modifying attributes as required.  
+        *   All amendments are tracked with an audit trail for compliance and transparency.
+    *   
+        **Dynamic Attribute Management:**  
+        *   Users can add attributes at runtime to Product Items during trade booking.  
+        *   Attributes can be of various types, including text, strings, numbers, and documents.
+
+7.  **Inventory Management:**  
+    *   Dedicated page for inventory with advanced filtering options.
+
+8.  **Mark Curves:**  
+    *   Separate page for managing and viewing mark price curves and physical asset prices.
+
+9.  **Profit & Loss Reporting:**  
+    *   Generate daily profit and loss (P&L) reports based on mark prices.
+    *   End-of-day (EOD) price marks must be retained and stored externally to CorTenX.
+    *   The system must support secure, reliable storage and retrieval of historical EOD price marks.
+    *   Traders must have the ability to view and analyze P&L over a customized period of time, leveraging the stored EOD price marks.
+
+10.  **Transaction Limits:**  
+    *   System enforces a limit on the number of transactions per account per month.
+
+11.  **Automated Price Fetching:**  
+    *   The system can automatically fetch real-time or historical pricing information by connecting to external APIs provided by exchanges, data vendors, or market aggregators.
+    *   Fetched pricing data can be linked to the relevant Product Item during trade booking.
+
+12.  **Helpdesk and AI Support:**  
+    *   Integrated chat window for users to interact with an AI agent for troubleshooting and support.
+    *   Escalation of broader or unresolved issues to a human helpdesk interface.
 
 ### Non-Functional Requirements
 | Area            | Target               | Validation         |
@@ -115,6 +157,17 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ### Design Specifications
 *   (To be developed - Style guide, component library)
 *   Focus on clarity, ease of use for non-technical users, and professional presentation for reports.
+
+#### Brand and Vision Alignment
+*   The Freemium platform UI must reflect Trovio’s brand identity, including logo usage, color palette, typography, and iconography as defined in Trovio’s brand guidelines.
+*   All user-facing components (desktop, Docker, and future SaaS) must maintain a consistent visual language that reinforces Trovio’s reputation for trust, innovation, and professionalism.
+*   The user experience should embody Trovio’s vision of transparency, simplicity, and empowerment in ESG data management.
+*   Visual design should communicate clarity, reliability, and accessibility, supporting both technical and non-technical users.
+*   Reference and adhere to Trovio’s official style guide and digital asset library.
+*   Collaborate with Trovio’s design team for review and approval of key UI components and screens.
+*   Ensure all reports and dashboards generated by the platform are branded appropriately for external stakeholders and auditors.
+*   Conduct design reviews with Trovio stakeholders at key milestones.
+*   Include brand compliance checks in the UI/UX acceptance criteria and UAT process.
 
 ### Accessibility Requirements
 *   Adherence to WCAG 2.1 Level AA guidelines where applicable.
