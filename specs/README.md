@@ -10,12 +10,12 @@ This directory contains detailed technical specifications for the Freemium platf
 - [ERP Sync Specification](./erp_sync.md) - ERP system integration patterns
 - [Registry API Specification](./registry_api.md) - Carbon/REC registry integrations
 - [MCP Server Specification](./mcp_server.md) - Model Context Protocol server implementation
-- [CorTenX Integration Specification](./cortenx_integration.md) - Blockchain assurance ledger integration
+- [CorTenX Integration Specification](./cortenx_integration.md) - Blockchain ledger integration
 
 ### Data Contracts
 - Asset normalization schemas
 - ESG metadata formats
-- Assurance ledger entry specifications
+- CorTenX ledger entry specifications
 
 ### Quality Gates
 - Performance targets (p95 ≤ 200ms)

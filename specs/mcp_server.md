@@ -21,7 +21,7 @@ Define the Model Context Protocol (MCP) server implementation for LLM interactio
 ```
 Client UI ↔ MCP Server ↔ Edge/API ↔ LLM Vendor/Local Model
           ↕                ↕
-    Vector Cache    Assurance Ledger
+    Vector Cache    CorTenX Ledger
 ```
 
 **Data Flow:**

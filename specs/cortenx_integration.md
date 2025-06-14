@@ -1,7 +1,7 @@
 # CorTenX Integration Specification
 
 ## Overview
-This specification defines how to integrate CorTenX (Trovio's tokenized asset ledger) as the immutable assurance layer within the Freemium ESG platform.
+This specification defines how to integrate CorTenX (Trovio's tokenized asset ledger) as the immutable blockchain ledger within the Freemium ESG platform.
 
 ## Strategic Rationale
 
@@ -13,7 +13,7 @@ This specification defines how to integrate CorTenX (Trovio's tokenized asset le
 - **API-First**: RESTful endpoints align with Freemium's architecture
 
 ### Position in Architecture
-CorTenX replaces our planned "Assurance Ledger" with a production-ready blockchain solution:
+CorTenX provides a production-ready blockchain solution for immutable ledger functionality:
 
 ```
 Data Ingest → Normalization → CorTenX Integration → CorTenX Ledger → API Layer → UI
@@ -158,21 +158,8 @@ class AssetQueryService {
 ## API Integration Points
 
 ### 1. Asset Creation Flow
-```mermaid
-sequenceDiagram
-    participant CSV as CSV Upload
-    participant FS as Freemium Service
-    participant CX as CorTenX API
-    participant DB as Local DB
-    
-    CSV->>FS: Upload asset data
-    FS->>FS: Validate & normalize
-    FS->>CX: Create product
-    CX-->>FS: Product ID
-    FS->>CX: Issue holding
-    CX-->>FS: Holding ID + blockchain hash
-    FS->>DB: Store with CorTenX references
-```
+
+🔄 **[CorTenX Integration Flow Diagram](../docs/diagrams/cortenx_integration_flow.md)** - Detailed sequence diagram showing asset creation and blockchain synchronization.
 
 ### 2. Audit Trail Access
 ```http
@@ -416,7 +403,7 @@ alerts:
 
 1. **Set up CorTenX development access** 
 2. **Create POC branch** with basic integration
-3. **Update PRD** to reflect CorTenX as assurance layer
+3. **Update PRD** to reflect CorTenX as blockchain ledger
 4. **Adjust Sprint planning** to include integration milestones
 
 ## Status

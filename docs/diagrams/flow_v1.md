@@ -1,93 +1,158 @@
-# Freemium Architecture Flow Diagram v1.0
+# Data Flow Diagram v1
 
 ## Overview
-This diagram illustrates the comprehensive data flow through the Freemium platform, from ingestion to user interaction.
+This diagram illustrates the complete end-to-end data flow in the Freemium platform's Basic release, from data ingestion through CorTenX blockchain integration to final user outputs. This shows the local deployment (desktop/Docker) with cloud connectivity for CorTenX blockchain and external integrations.
 
-## Mermaid Source
-
+## Data Flow Diagram
 ```mermaid
-graph TD
-    A["CSV Upload<br/>ERP Sync<br/>Registry API"] -->|Normalize| B["Data Ingest Layer"]
-    B -->|Validate & Transform| C["Normalization & ESG Enrichment"]
-    C -->|Rules Engine| D["Asset Reconciliation"]
-    D -->|Emit Entries| E["Assurance Ledger"]
+flowchart TD
+    %% Data Sources
+    CSV[📄 CSV Files]
+    ERP[🏢 ERP Systems]
+    REG[🌍 Carbon/REC Registries]
     
-    F["UI Dashboard"] -->|User Query| G["MCP Server"]
-    G -->|Context + Auth| H["LLM Provider<br/>(OpenAI/Local)"]
-    H -->|Stream Response| G
-    G -->|Real-time Updates| F
+    %% Ingestion Layer
+    INGEST{📥 Data Ingestion Layer}
+    CSV --> INGEST
+    ERP --> INGEST
+    REG --> INGEST
     
-    E -->|Read Access| I["API Layer"]
-    I -->|GraphQL/REST| F
-    I -->|Data Context| G
+    %% Normalization & Processing
+    NORM[🔄 Data Normalization<br/>& ESG Enrichment]
+    INGEST --> NORM
     
-    J["Vector Memory Cache"] -->|Conversation Context| G
-    G -->|Store Embeddings| J
+    %% Rules Engine
+    RULES[⚙️ Rules Engine<br/>Asset Reconciliation]
+    NORM --> RULES
     
-    K["External Registries<br/>(Verra, GATS)"] -->|Price Feeds<br/>Verification| A
+    %% CorTenX Integration (Cloud-based)
+    CORTENX[🔗 CorTenX Cloud API<br/>Blockchain Ledger]
+    RULES --> CORTENX
     
-    L["ERP Systems<br/>(SAP, NetSuite)"] -->|Real-time Sync<br/>Batch Import| A
+    %% Local Storage Layer
+    STORAGE[(💾 SQLite Database<br/>Local Caching)]
+    RULES --> STORAGE
+    CORTENX --> STORAGE
     
-    M["Telemetry & Monitoring"] -->|Collect Metrics| N["Grafana Dashboard"]
-    G -->|Emit Metrics| M
-    I -->|Performance Data| M
+    %% Optional MCP Server Integration
+    MCP[🤖 MCP Server<br/>Optional Add-on]
+    STORAGE --> MCP
     
-    style A fill:#e1f5fe
-    style F fill:#f3e5f5
-    style E fill:#fff3e0
-    style G fill:#e8f5e8
-    style H fill:#fce4ec
+    %% API Layer
+    API[🔌 REST/GraphQL APIs<br/>Versioned Endpoints]
+    STORAGE --> API
+    MCP --> API
+    
+    %% Frontend Applications
+    UI[🖥️ React/Next.js Frontend<br/>Dashboard Interface]
+    API --> UI
+    
+    %% User Outputs
+    DASHBOARD[📊 Heat-Map &<br/>Variance Dashboard]
+    PDF[📋 PDF Reports<br/>Audit-Ready]
+    CHAT[💬 LLM Chat Interface<br/>Optional Add-on]
+    
+    UI --> DASHBOARD
+    UI --> PDF  
+    UI -.->|Optional| CHAT
+    
+    %% User Interaction
+    USER[👤 End User<br/>ESG/Sustainability Teams]
+    DASHBOARD --> USER
+    PDF --> USER
+    CHAT -.->|Optional| USER
+    
+    %% Feedback Loop
+    USER -.->|Upload Data| CSV
+    USER -.->|Configure Rules| RULES
+    USER -.->|Optional Queries| MCP
+    
+    %% Cloud Connectivity
+    CLOUD{☁️ Internet<br/>Connectivity}
+    ERP --> CLOUD
+    REG --> CLOUD
+    CORTENX --> CLOUD
+    
+    %% Styling
+    classDef source fill:#e1f5fe
+    classDef process fill:#f3e5f5
+    classDef blockchain fill:#ff9999
+    classDef storage fill:#e8f5e8
+    classDef output fill:#fff2cc
+    classDef user fill:#f0f4c3
+    classDef cloud fill:#e3f2fd
+    classDef optional fill:#f1f8e9
+    
+    class CSV,ERP,REG source
+    class INGEST,NORM,RULES,API,UI process
+    class CORTENX blockchain
+    class STORAGE storage
+    class DASHBOARD,PDF output
+    class USER user
+    class CLOUD cloud
+    class MCP,CHAT optional
 ```
 
-## Data Flow Description
+## Key Components
 
-### 1. Data Ingestion (Left Side)
-- **Multiple Sources**: CSV files, ERP systems, and external registries feed into the platform
-- **Normalization**: Raw data is validated, transformed, and enriched with ESG metadata
-- **Reconciliation**: Rules engine processes assets and emits entries to the assurance ledger
+### **Data Sources**
+- **CSV Files**: Manual data uploads via file interface
+- **ERP Systems**: Automated synchronization via REST/GraphQL APIs
+- **Carbon/REC Registries**: Real-time data pulls from environmental registries
 
-### 2. User Interaction (Right Side)  
-- **Dashboard UI**: Users interact through React-based interface
-- **MCP Server**: Handles LLM interactions with proper auth and context packaging
-- **Streaming**: Real-time responses from LLM providers (OpenAI or local models)
+### **Processing Pipeline**
+1. **Data Ingestion Layer**: Modular connectors normalize different data formats
+2. **ESG Enrichment**: Adds metadata, calculations, and compliance markers
+3. **Rules Engine**: Reconciles assets, validates data, triggers blockchain events
+4. **CorTenX Integration**: Creates immutable audit trail on blockchain ledger
 
-### 3. Core Data Store
-- **Assurance Ledger**: Central repository of reconciled asset data
-- **API Layer**: GraphQL/REST endpoints for data access
-- **Vector Cache**: Conversation context for efficient follow-up queries
+### **Deployment Architecture**
+- **Local Deployment**: Desktop application OR Docker container (both provide localhost web interface)
+- **Cloud Connectivity**: Required for CorTenX blockchain and external integrations (ERP/Registry APIs)
+- **Local Storage**: SQLite database for performance caching and offline viewing
 
-### 4. External Integrations
-- **Registry APIs**: Real-time price feeds and certificate verification
-- **ERP Sync**: Scheduled and real-time data synchronization
-- **Monitoring**: Comprehensive telemetry collection and visualization
+### **User Interface Layer**
+- **REST/GraphQL APIs**: Versioned endpoints for all platform functionality
+- **React Frontend**: Modern dashboard with real-time updates via localhost web interface
+- **MCP Server**: Optional add-on for LLM-powered natural language querying
 
-## Performance Annotations
+### **User Outputs**
+- **Heat-Map Dashboard**: Visual representation of asset distribution and ESG metrics
+- **Variance Dashboard**: Identifies discrepancies in environmental asset reporting
+- **PDF Reports**: Audit-ready compliance documents with CorTenX blockchain verification
+- **LLM Chat**: Optional natural language queries for complex data analysis
 
-### Latency Targets (p95)
-- **MCP Server**: ≤ 200ms request→first-token
-- **API Layer**: ≤ 100ms for standard queries
-- **Data Ingestion**: ≤ 5s for CSV uploads (< 100MB)
-- **ERP Sync**: ≤ 30s for batch operations
+## Data Flow Patterns
 
-### Data Contracts
-- **CSV Ingest**: UTF-8, max 500k rows, structured ESG metadata
-- **ERP APIs**: OAuth2/API key auth, rate-limited, incremental sync
-- **Registry APIs**: Certificate verification, price feeds, compliance data
+### **Primary Flow**: CSV Upload → Report Generation
+1. User uploads CSV file to local application
+2. System normalizes and enriches data locally
+3. Rules engine reconciles assets
+4. CorTenX cloud API records immutable blockchain entries
+5. User generates PDF report with blockchain verification
 
-## Security Boundaries
-- **Tenant Isolation**: All data access scoped by tenant_id
-- **Authentication**: JWT tokens for API access, mTLS for ERP connections
-- **Data Protection**: Encryption at rest/transit, no cloud egress in desktop mode
+### **API Integration Flow**: ERP Sync → Dashboard Updates
+1. Local application connects to ERP systems via internet
+2. Real-time data processing and reconciliation in local SQLite
+3. CorTenX cloud API updates blockchain ledger
+4. Dashboard automatically updates with new metrics and alerts
 
-## Technology Stack Mapping
-- **Ingest Layer**: Kotlin/Spring Boot microservices
-- **UI Layer**: React/Next.js with Vercel deployment
-- **MCP Server**: Node.js/TypeScript with WebSocket streaming
-- **Storage**: SQLite (desktop) / PostgreSQL (SaaS)
-- **Vector Store**: SQLite-VSS (desktop) / pgvector (SaaS)
+### **Query Flow**: User Question → LLM Response (Optional Add-on)
+1. User asks natural language question via chat interface
+2. MCP server packages context with current SQLite data state
+3. LLM (cloud or local) processes query against ESG asset database
+4. Structured response with data citations returned
+
+## Performance Targets
+- **End-to-End Latency**: ≤30 minutes from CSV upload to audit-ready report
+- **API Response Time**: ≤200ms p95 for dashboard queries
+- **CorTenX Integration**: ≤5s for blockchain ledger updates
+- **Internet Dependency**: Core features require connectivity for CorTenX and external integrations
 
 ## Status
-- **Version**: v1.0
+- **Version**: 1.1
 - **Created**: 2025-06-14
+- **Updated**: 2025-06-14
 - **Owner**: James
-- **Review Status**: Ready for team review 
+- **Review Status**: Updated to reflect local+cloud hybrid architecture
+- **Dependencies**: CorTenX Cloud API, External integrations (ERP/Registry), Optional MCP Server 

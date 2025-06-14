@@ -3,27 +3,35 @@
 ## 1. Overview
 
 ### Product Vision and Purpose
-Freemium is a modular, API-first inventory platform for ESG-critical commodities and digital environmental assets. It aims to provide corporates across agri-commodities, precious metals, battery supply chains, and emerging environmental markets with a plug-and-play way to inventory physical and digital environmental assets, prove provenance, and generate compliant reports for audit-grade ESG disclosure mandates. The platform is designed for fast initial deployment via a freemium desktop/Docker image, with the capability to scale to a SaaS model with premium analytics.
+Freemium is a modular, API-first inventory platform for ESG-critical commodities and digital environmental assets built on CorTenX blockchain infrastructure. It aims to provide corporates across agri-commodities, precious metals, battery supply chains, and emerging environmental markets with a plug-and-play way to inventory physical and digital environmental assets, prove provenance, and generate compliant reports for audit-grade ESG disclosure mandates. The platform is designed for local deployment (desktop application or Docker container) while leveraging CorTenX cloud services for immutable blockchain ledger capabilities.
 
 ### Scope and Boundaries
-**Included in initial release:**
-*   Desktop or Docker image installation (no cloud data egress for initial deployment).
-*   CSV and API ingest for inventory and ESG metadata via modular connectors.
-*   Rules engine for asset reconciliation and emission of assurance ledger entries.
-*   Heat-map and variance dashboard.
-*   One-click PDF report generation for auditors.
+**Included in Basic Freemium release:**
+*   **Dual deployment options**: Desktop application OR Docker container (both access localhost web interface)
+*   **Core integrations**: CSV ingest, ERP sync, Registry APIs for real-time data
+*   **CorTenX blockchain integration**: Immutable ledger for all ESG assets (cloud-based)
+*   **Rules engine**: Asset reconciliation and automated CorTenX ledger entries
+*   **Dashboards**: Heat-map and variance visualization
+*   **Reporting**: One-click PDF generation for auditors
+*   **Local storage**: SQLite database for performance and offline viewing
 
-**Not included in initial release (potential future scope):**
-*   Full multi-user SaaS capabilities and premium modules (activated via optional Edge-Sync).
+**Optional add-on features:**
+*   **MCP Server**: LLM-powered natural language querying capabilities
+
+**Not included in initial release (future scope):**
+*   Multi-user capabilities and full SaaS deployment
+*   Advanced analytics and premium reporting modules
 
 ### Assumptions
 *   Target users have existing data in CSV format or accessible via APIs.
 *   Users possess a baseline understanding of ESG concepts and reporting requirements.
-*   The initial focus is on providing a standalone, secure solution before expanding to cloud-based services.
+*   Users prefer local deployment for control while accepting cloud connectivity for blockchain verification.
+*   Internet connectivity available for CorTenX blockchain integration and external data sources.
+*   Desktop/Docker deployment provides sufficient value for initial market validation.
 
 ### Goals and Success Metrics
 *   **Primary KPI:** `<30 min to audit-ready ESG inventory & variance dashboard for first dataset upload>` – beating spreadsheet baselines by >90%.
-*   Mirror the “< 1 hr time-to-first-value” case study.
+*   Mirror the "< 1 hr time-to-first-value" case study.
 
 ## 2. Stakeholder Identification
 
@@ -56,13 +64,13 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
     *   System supports API ingest (details to be specified per connector).
     *   Ingested data is normalized via modular connectors.
 3.  **Asset Reconciliation:** A rules engine reconciles assets.
-4.  **Assurance Ledger:** The system emits assurance ledger entries based on reconciliation.
+4.  **CorTenX Integration:** The system emits CorTenX blockchain entries based on reconciliation.
 5.  **Reporting & Visualization:**
     *   User can view a heat-map of assets/ESG data.
     *   User can view a variance dashboard.
     *   User can generate a one-click PDF report suitable for auditors.
 6.  **Modularity:** Connectors for data ingest are modular.
-7.  **(Optional Future) Edge-Sync:** System allows activation for multi-user SaaS and premium modules.
+7.  **(Optional) MCP Server Integration:** System can provide LLM-powered natural language querying as an add-on feature.
 
 ### Non-Functional Requirements
 | Area            | Target               | Validation         |
@@ -70,7 +78,7 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 | Latency (p95)   | ≤ 200 ms             | k6 load test       |
 | Offline-first   | Full desktop functionality | QA scenario matrix |
 | Security        | ISO 27001 controls   | Pen-testing        |
-| Data Integrity  | Accurate reconciliation and ledger entries | Automated checks, Audit trail |
+| Data Integrity  | Accurate reconciliation and CorTenX entries | Automated checks, Blockchain audit trail |
 | Usability       | Intuitive for target users | User testing       |
 
 ### User Stories
@@ -81,23 +89,32 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ## 4. Technical Requirements
 
 ### Platform and Technology Stack
-*   **Deployment:** Docker container images and standalone desktop binary; produced via Gradle as Spring Boot fat‑jars and containerised for consistent runtime.  
-*   **Backend:** Kotlin 17 with Spring Boot 3.x micro‑services, aligned with the existing service stack.  
+*   **Deployment:** Dual options - standalone desktop application (Electron/Tauri) OR Docker container; both provide localhost web interface for user interaction.  
+*   **Backend:** Kotlin 17 with Spring Boot 3.x micro‑services, aligned with the existing service stack.  
 *   **CLI Utilities:** Kotlin‑based CLI tools for ingest pipelines, migrations, and local debugging.  
-*   **Frontend:** React (Next.js) scaffolded via Vercel v0.  
-*   **Database:** SQLite for desktop mode, PostgreSQL for Edge‑Sync/SaaS deployments.  
+*   **Frontend:** React (Next.js) scaffolded via Vercel v0.  
+*   **Database:** SQLite for local data storage and performance caching; CorTenX cloud services for blockchain ledger.  
 *   **API:** Versioned REST / GraphQL endpoints implemented with Spring controllers; OpenAPI docs generated from source.  
 
 ### System Architecture
-*   **Layers:** Ingest Connectors → Normalisation & ESG Enrichment → Assurance Ledger → API / UI & Dashboards.
-*   *(Embed `/diagrams/freemium_arch_v0.png` for visual representation)*
+*   **Layers:** Ingest Connectors → Normalisation & ESG Enrichment → CorTenX Integration → API / UI & Dashboards.
+
+📊 **[System Architecture Diagram](diagrams/system_architecture.md)** - Comprehensive view of all platform components and their interactions.
+
+**Architecture Principles:**
+- **Local-First**: Local deployment with cloud connectivity for blockchain and external integrations
+- **CorTenX Foundation**: Built on CorTenX blockchain infrastructure as the core ledger system
+- **Modular Design**: Each layer can be developed and deployed independently
+- **Dual Deployment**: Desktop application OR Docker container options
+- **API-First**: All functionality accessible via versioned APIs
+- **Optional LLM**: MCP server as add-on for intelligent querying capabilities
 
 ### Data Requirements
 *   **Data Sources:** CSV files, ERP systems (via API), Carbon/REC Registries (via API).
 *   **Data Formats:**
     *   CSV Ingest: Defined in `specs/csv_ingest.md`.
 *   **Database Schema:** (To be designed based on asset types, ESG metadata, ledger entries).
-*   **Data Storage:** Local storage for desktop/Docker; (cloud storage for future SaaS).
+*   **Data Storage:** Local SQLite database for caching and performance; CorTenX cloud ledger for immutable blockchain records.
 
 ### API Specifications
 | Interface                 | Protocol       | Spec Document             |
@@ -123,13 +140,15 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ## 6. Security and Compliance
 
 ### Authentication and Authorization
-*   **Desktop/Docker:** Local user authentication (if applicable, or direct access).
-*   **(Future SaaS):** Robust user authentication (e.g., OAuth2, MFA), role-based access control (RBAC).
+*   **Local Access:** Direct access to localhost web interface
+*   **CorTenX Integration:** Secure API authentication for blockchain operations
+*   **External APIs:** OAuth/API key authentication for ERP and Registry integrations
 
 ### Data Privacy and Protection
-*   Initial deployment ensures no cloud data egress.
-*   Data at rest and in transit to be encrypted (especially for future SaaS).
-*   Compliance with relevant data privacy regulations (e.g., GDPR if applicable).
+*   Local-first architecture with controlled cloud connectivity for blockchain verification.
+*   Sensitive data cached locally with SQLite encryption extensions.
+*   CorTenX blockchain provides immutable audit trail while maintaining data privacy.
+*   External API connections secured with industry-standard authentication protocols.
 
 ### Regulatory Compliance
 *   Designed to support audit-grade ESG disclosure mandates (e.g., CSRD).
@@ -139,7 +158,7 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 
 **Position in Flow**  
 Sits between the Client UI ↔ Edge/API layers.  
-→ Receives structured “workspace context” from the UI, adds auth + tenant metadata, and forwards the payload to the chosen LLM vendor or a local model (desktop mode).
+→ Receives structured "workspace context" from the UI, adds auth + tenant metadata, and forwards the payload to the chosen LLM vendor or a local model (desktop mode).
 
 **Core Responsibilities**  
 1. **Context Packaging** – Serialise current filters, visible ledger rows, and draft queries into a single JSON object (`ContextV1`).  
@@ -153,13 +172,13 @@ Sits between the Client UI ↔ Edge/API layers.
 |--------|--------|-------|
 | **Latency (p95)** | ≤ 200 ms request→first-token | Inclusive of vector lookup and auth checks. |
 | **Throughput** | 50 concurrent WebSocket sessions per tenant | Aligns with current Edge limits. |
-| **Offline Fallback** | Must operate with local SQLite + on-device GGUF model in Desktop mode | Feature-parity with SaaS path. |
+| **Offline Operation** | Must operate entirely offline with local SQLite + on-device GGUF model | No internet connectivity required. |
 | **Security** | Same JWT issuer + mTLS policy as Core API | No additional IdP introduced. |
 | **Observability** | Traces pushed to OpenTelemetry; errors to Sentry | Alert at p95 > 250 ms for 5 min. |
 
 **Deployment / Versioning**  
-* Packaged as a stateless Node/TypeScript micro-service (`mcp-svc`) deployed alongside Edge functions.  
-* One container per tenant in SaaS; desktop mode runs an embedded binary.  
+* Packaged as an embedded service within the desktop/Docker application.  
+* Runs locally with GGUF model files bundled or downloaded on first run.  
 * Follows Semantic Versioning; breaking schema changes require `/v2` endpoints.
 
 **Open Items & Owners**  
@@ -199,7 +218,7 @@ Sits between the Client UI ↔ Edge/API layers.
 
 *   **Phase 1: Core Desktop/Docker Product (MVP)**
     *   Milestone 1.1: Basic CSV Ingest & Normalization - [Date]
-    *   Milestone 1.2: Rules Engine & Assurance Ledger v1 - [Date]
+    *   Milestone 1.2: Rules Engine & CorTenX Integration v1 - [Date]
     *   Milestone 1.3: Dashboard & PDF Reporting v1 - [Date]
     *   Milestone 1.4: MVP Release - [Date]
 *   **Phase 2: API Connectors & Enhancements**
