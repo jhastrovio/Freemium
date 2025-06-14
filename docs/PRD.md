@@ -81,11 +81,12 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ## 4. Technical Requirements
 
 ### Platform and Technology Stack
-*   **Deployment:** Docker image, Desktop application (specifics TBD).
-*   **Backend:** (To be defined - e.g., Python, Node.js, Go)
-*   **Frontend:** (To be defined - e.g., React, Vue, Svelte, or desktop framework)
-*   **Database:** (To be defined - e.g., SQLite for desktop, PostgreSQL for scalable solution)
-*   **API:** REST / GraphQL for ERP Sync and Registry API.
+*   **Deployment:** Docker container images and standalone desktop binary; produced via Gradle as Spring Boot fat‑jars and containerised for consistent runtime.  
+*   **Backend:** Kotlin 17 with Spring Boot 3.x micro‑services, aligned with the existing service stack.  
+*   **CLI Utilities:** Kotlin‑based CLI tools for ingest pipelines, migrations, and local debugging.  
+*   **Frontend:** React (Next.js) scaffolded via Vercel v0.  
+*   **Database:** SQLite for desktop mode, PostgreSQL for Edge‑Sync/SaaS deployments.  
+*   **API:** Versioned REST / GraphQL endpoints implemented with Spring controllers; OpenAPI docs generated from source.  
 
 ### System Architecture
 *   **Layers:** Ingest Connectors → Normalisation & ESG Enrichment → Assurance Ledger → API / UI & Dashboards.
@@ -133,6 +134,42 @@ Freemium is a modular, API-first inventory platform for ESG-critical commodities
 ### Regulatory Compliance
 *   Designed to support audit-grade ESG disclosure mandates (e.g., CSRD).
 *   System security to align with ISO 27001 controls.
+
+### 7. LLM Interaction Layer – Model Context Protocol (MCP) Server
+
+**Position in Flow**  
+Sits between the Client UI ↔ Edge/API layers.  
+→ Receives structured “workspace context” from the UI, adds auth + tenant metadata, and forwards the payload to the chosen LLM vendor or a local model (desktop mode).
+
+**Core Responsibilities**  
+1. **Context Packaging** – Serialise current filters, visible ledger rows, and draft queries into a single JSON object (`ContextV1`).  
+2. **Authorization Guard** – Enforce JWT/mTLS checks identical to Core API before exposing any data to the LLM.  
+3. **Vector Memory Cache** – Store the last N prompts + ledger snippets per tenant to enable follow-up queries without refetching full rows.  
+4. **Streaming Interface** – Provide `WS /chat` and `POST /v1/context` endpoints; supports partial token streaming to meet ≤ 200 ms p95 latency.  
+5. **Telemetry Hook** – Emit timing + token-usage metrics to Kafka topic `llm.telemetry` for Grafana dashboards.
+
+**Non-Functional Requirements**  
+| Metric | Target | Notes |
+|--------|--------|-------|
+| **Latency (p95)** | ≤ 200 ms request→first-token | Inclusive of vector lookup and auth checks. |
+| **Throughput** | 50 concurrent WebSocket sessions per tenant | Aligns with current Edge limits. |
+| **Offline Fallback** | Must operate with local SQLite + on-device GGUF model in Desktop mode | Feature-parity with SaaS path. |
+| **Security** | Same JWT issuer + mTLS policy as Core API | No additional IdP introduced. |
+| **Observability** | Traces pushed to OpenTelemetry; errors to Sentry | Alert at p95 > 250 ms for 5 min. |
+
+**Deployment / Versioning**  
+* Packaged as a stateless Node/TypeScript micro-service (`mcp-svc`) deployed alongside Edge functions.  
+* One container per tenant in SaaS; desktop mode runs an embedded binary.  
+* Follows Semantic Versioning; breaking schema changes require `/v2` endpoints.
+
+**Open Items & Owners**  
+| Item | Owner | Sprint |
+|------|-------|--------|
+| Vector schema finalised (`prompt`, `asset_id`, `embedding`) | @data-lead | SPRINT-2 |
+| Latency budget test harness in CI | @devops | SPRINT-3 |
+| Desktop GGUF model selection (7B vs 13B) | @ml-lead | SPRINT-3 |
+
+---
 
 ## 7. Testing and Validation
 
